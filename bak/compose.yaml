@@ -1,0 +1,42 @@
+﻿services:
+  orders_outbox:
+    image: orders_outbox
+    container_name: outbox_api_app
+    networks:
+      - nw_backend
+      - nw_otel_ext
+      - nw_db_ext
+    build:
+      context: .
+      dockerfile: app.api/Dockerfile
+    depends_on:
+      - db_sql
+    ports:
+      - "8051:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - AllowedHosts=*
+      - CONNECTIONSTRINGS__COREDB=Host=db_sql;Port=5432;Database=orders_outbox_comp;Username=root;Password=*Docker.Secret.2020*;Timezone=America/Bogota;Application Name=orders_outbox_comp;
+  db_sql:
+    image: postgres:18-alpine
+    container_name: outbox_db_sql
+    networks:
+      - nw_backend
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=*Docker.Secret.2020*
+      - POSTGRES_DB=orders_outbox_comp
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h 127.0.0.1 -U root -d orders_outbox_comp']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+networks:
+  nw_backend:
+  nw_otel_ext:
+    external: true
+    name: lgol_dev_default
+  nw_db_ext:
+    external: true
+    name: dbs_dev_dbs_dev_net

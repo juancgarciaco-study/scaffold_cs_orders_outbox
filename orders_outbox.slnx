@@ -1,0 +1,12 @@
+<Solution>
+    <Folder Name="/Solution Items/">
+        <File Path=".gitignore"/>
+        <File Path="src/compose.yaml"/>
+        <File Path="src/.editorconfig"/>
+        <File Path="src/.dockerignore"/>
+        <File Path="src/Directory.Packages.props"/>
+    </Folder>
+    <Folder Name="/1-src/">
+        <Project Path="src/app.api/app.api.csproj"/>
+    </Folder>
+</Solution>

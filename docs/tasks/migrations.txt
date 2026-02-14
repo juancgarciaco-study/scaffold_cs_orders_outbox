@@ -1,0 +1,43 @@
+# Comandos para Migraciones de Entity Framework Core
+
+## 1. Añadir una nueva migración
+
+Cuando haya cambios en tus entidades de `App.Domain` o en las configuraciones de `outbox_1.Infrastructure`, crear un nuevo archivo de migración.
+
+```bash
+dotnet ef migrations add --project outbox_1/outbox_1.csproj --startup-project outbox_1/outbox_1.csproj --context outbox_1.Infrastructure.AppDbContext --configuration Debug V0Initial --output-dir outbox_1.Infrastructure/Migrations/SqlServer
+dotnet ef migrations add --project outbox_1/outbox_1.csproj --startup-project outbox_1/outbox_1.csproj --context outbox_1.Infrastructure.AppDbContext --configuration Debug V0Initial --output-dir outbox_1.Infrastructure/Migrations/PostgreSQL
+```
+
+- **`InitialCreate`**: Es el nombre que le das a la migración. Cámbialo por algo descriptivo (ej. `AddEmailToPerson`).
+- **`--project outbox_1.Infrastructure`**: Especifica que el `DbContext` y las migraciones están en el proyecto `outbox_1.Infrastructure`.
+- **`--startup-project outbox_1.Infrastructure`**: Especifica que el proyecto `outbox_1.Infrastructure` se debe usar para la configuración y las dependencias (como la cadena de conexión de la base de datos).
+
+## 2. Aplicar migraciones a la base de datos
+
+Una vez que la migración está creada, este es el comando que ejecuta los cambios contra tu base de datos.
+
+```bash
+dotnet ef database update --project outbox_1.Infrastructure --startup-project outbox_1.Infrastructure
+dotnet ef database update --project outbox_1/outbox_1.csproj --startup-project outbox_1/outbox_1.csproj --context outbox_1.Infrastructure.AppDbContext --configuration Debug ???_V-0.1 --connection "Server=Host=127.0.0.1;Port=35432;Database=outboxdb;Username=root;Password=*Docker.Secret.2020*;Timezone=America/Bogota;Application Name=outbox_dev;;"
+
+--connection "Server=Host=127.0.0.1;Port=35432;Database=outboxdb;Username=root;Password=*Docker.Secret.2020*;Timezone=America/Bogota;Application Name=outbox_dev;;"
+--connection "Server=Host=127.0.0.1;Port=35432;Database=outboxdb;Username=root;Password=*Docker.Secret.2020*;Timezone=America/Bogota;Application Name=outbox_dev;"
+
+dotnet ef database update --project outbox_1/outbox_1.csproj --startup-project outbox_1/outbox_1.csproj --context outbox_1.Infrastructure.AppDbContext --configuration  V0Initial  --connection "Server="
+```
+
+## 3. Remover la ultima migracion
+dotnet ef migrations remove --project outbox_1/outbox_1.csproj --startup-project outbox_1/outbox_1.csproj --context outbox_1.Infrastructure.AppDbContext --configuration Debug --no-build
+
+Este comando tomará todas las migraciones pendientes y ejecutará el SQL correspondiente, actualizando el esquema de la base de datos para que coincida con tu código.
+
+## 4. Borra base de datos
+dotnet ef database drop --project outbox_1/outbox_1.csproj --startup-project outbox_1/outbox_1.csproj --context outbox_1.Infrastructure.AppDbContext --configuration Debug --no-build
+
+----
+export ConnectionStrings__OutboxDb="Host=127.0.0.1;Port=35432;Database=outboxdb;Username=root;Password=*Docker.Secret.2020*;Timezone=America/Bogota;Application Name=outbox_dev;"
+
+
+## 5. Crear SQL Scripts
+dotnet ef migrations script --project outbox_1/outbox_1.csproj --startup-project outbox_1/outbox_1.csproj --context outbox_1.Infrastructure.AppDbContext --configuration Debug --idempotent --output outbox_1.Infrastructure/Migrations/SqlServer/V0SqlServer.sql

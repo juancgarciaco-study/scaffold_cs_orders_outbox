@@ -1,0 +1,38 @@
+<!-- For more info on central package management go to https://devblogs.microsoft.com/nuget/introducing-central-package-management/ -->
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <AspireVersion>9.5.2</AspireVersion>
+    <AspnetVersion>10.0.3</AspnetVersion>
+    <EfcoreVersion>10.0.3</EfcoreVersion>
+    <MicrosoftExtensionsVersion>10.0.0</MicrosoftExtensionsVersion>
+    <OpenTelemetryVersion>1.15.0</OpenTelemetryVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="$(AspnetVersion)"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="$(AspnetVersion)"/>
+    <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspnetVersion)"/>
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(AspnetVersion)"/>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="$(EfcoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="$(EfcoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EfcoreVersion)"/>
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="$(EfcoreVersion)"/>
+    <PackageVersion Include="EFCore.NamingConventions" Version="10.0.1"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="FluentValidation" Version="12.1.1"/>
+    <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.1"/>
+    <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0"/>
+    <PackageVersion Include="Scalar.AspNetCore" Version="2.12.36"/>
+    <PackageVersion Include="Ulid" Version="1.4.1"/>
+    <PackageVersion Include="Ardalis.GuardClauses" Version="5.0.0"/>
+  </ItemGroup>
+
+</Project>

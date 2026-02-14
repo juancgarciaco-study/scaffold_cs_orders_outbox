@@ -1,0 +1,38 @@
+﻿ARG DOTNET_VERSION=10.0
+ARG BUILD_CONFIGURATION=Debug
+ARG BUILD_PLATFORM=linux-musl-x64
+
+FROM mcr.microsoft.com/dotnet/sdk:"${DOTNET_VERSION}" AS dotnet_sdk
+FROM mcr.microsoft.com/dotnet/aspnet:"${DOTNET_VERSION}" AS dotnet_runtime
+
+# Stage 1: Build the application
+FROM dotnet_sdk AS build
+WORKDIR /src
+#COPY ["../Directory.Packages.props", "out/"]
+#COPY ["app.api/app.api.csproj", "out/"]
+#RUN dotnet restore "out/app.api.csproj"
+COPY . .
+RUN dotnet restore "app.api/app.api.csproj"
+RUN dotnet build "app.api/app.api.csproj" -c "${BUILD_CONFIGURATION}" -o /app/build /p:DebugType=Full
+
+# Stage 2: Publish the application
+FROM build AS publish
+RUN dotnet publish "app.api/app.api.csproj" -c "${BUILD_CONFIGURATION}" -o /app/publish -r "${BUILD_PLATFORM}" /p:UseAppHost=false /p:DebugType=Full
+
+# Stage 3: Create the final runtime image
+FROM dotnet_runtime AS final
+# update the package index
+RUN apt update && \
+    apt-get install -y libicu-dev curl && \
+    apt upgrade -y && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+# install icu-libs for globalization support
+#RUN apt-get install libicu-dev
+#RUN apt-get install tzdata
+
+WORKDIR /app
+COPY --from=publish /app/publish .
+EXPOSE 8080
+RUN echo "Hello!"
+ENTRYPOINT ["dotnet", "./app.api.dll"]

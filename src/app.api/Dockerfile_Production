@@ -1,0 +1,31 @@
+﻿
+ARG DOTNET_VERSION=10.0
+FROM mcr.microsoft.com/dotnet/sdk:"${DOTNET_VERSION}" AS sdkimage
+FROM mcr.microsoft.com/dotnet/aspnet:"${DOTNET_VERSION}-alpine" AS runtimeimage
+
+ARG BUILD_CONFIGURATION=Debug
+ARG BUILD_PLATFORM=linux-musl-x64
+EXPOSE 8080
+
+FROM sdkimage AS build
+WORKDIR /builds
+COPY . ./src
+RUN dotnet restore "src/app.api/app.api.csproj"
+#RUN dotnet build "src/app.api/app.api.csproj" -c "${BUILD_CONFIGURATION}" -o /builds/build /p:DebugType=Full
+
+FROM build AS publish
+RUN dotnet publish "src/app.api/app.api.csproj" -c "${BUILD_CONFIGURATION}" -o /builds/publish -r "${BUILD_PLATFORM}" /p:UseAppHost=false /p:DebugType=None /p:DebugSymbols=false
+#CMD ["tail", "-f", "/dev/null"]
+
+FROM runtimeimage AS final
+USER root
+# update the package index
+RUN apk update
+# install icu-libs for globalization support
+RUN apk add --no-cache icu-libs
+# RUN apk add --no-cache icu-data-full
+USER $APP_UID
+
+WORKDIR /app
+COPY --from=publish /builds/publish .
+ENTRYPOINT ["dotnet", "app.api.dll"]

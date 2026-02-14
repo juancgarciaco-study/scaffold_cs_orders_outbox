@@ -1,0 +1,59 @@
+﻿name: orders_outbox
+services:
+  app.api.staging:
+    image: oo.api.app:0.1.1-stag
+    container_name: oo_api_app_stag
+    networks:
+      - nw_backend
+      - nw_otel_ext
+      - nw_db_ext
+    build:
+      context: .
+      dockerfile: app.api/Dockerfile_Staging
+    depends_on:
+      - app.sql.staging
+    ports:
+      - "9081:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+      - CONNECTIONSTRINGS__COREDB=host=oo_sql_app_stag;Port=5432;Database=orders_outbox_stag;Username=root;Password=*Docker.Secret.2020*;Timezone=America/Bogota;Application Name=orders_outbox_stag;
+      - DOTNET_RUNNING_IN_CONTAINER=true
+  app.sql.staging:
+    image: postgres:18-alpine
+    container_name: oo_sql_app_stag
+    networks:
+      - nw_backend
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=*Docker.Secret.2020*
+      - POSTGRES_DB=orders_outbox
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -h 127.0.0.1 -U root -d orders_outbox' ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  app.api.production:
+    image: oo.api.app:0.1
+    container_name: oo_api_app_prod
+    networks:
+      - nw_backend
+      - nw_otel_ext
+      - nw_db_ext
+    build:
+      context: .
+      dockerfile: app.api/Dockerfile_Production
+    ports:
+      - "9082:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - CONNECTIONSTRINGS__COREDB=host=192.168.1.16;Port=35432;Database=orders_outbox_prod;Username=root;Password=*Docker.Secret.2020*;Timezone=America/Bogota;Application Name=orders_outbox_prod;
+      - DOTNET_RUNNING_IN_CONTAINER=true
+
+networks:
+  nw_backend:
+  nw_otel_ext:
+    external: true
+    name: lgol_dev_default
+  nw_db_ext:
+    external: true
+    name: dbs_dev_dbs_dev_net
