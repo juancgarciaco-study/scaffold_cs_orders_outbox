@@ -10,7 +10,7 @@ EXPOSE 8080
 FROM sdkimage AS build
 WORKDIR /builds
 COPY . ./src
-RUN ls
+#RUN ls
 RUN dotnet restore "src/app.api/app.api.csproj"
 #RUN dotnet build "src/app.api/app.api.csproj" -c "${BUILD_CONFIGURATION}" -o /builds/build /p:DebugType=Full
 
