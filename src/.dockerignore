@@ -8,9 +8,6 @@
 **/.vs
 **/.vscode
 **/.idea
-**/artifacts
-**/.artifacts
-**/.editorconfig
 **/*.*proj.user
 **/*.dbmdl
 **/*.jfm
@@ -26,4 +23,5 @@
 **/values.dev.yaml
 LICENSE
 README.md
-**/Directory.Build.props
+**/appsettings.Development.json
+**/http-client.private.env.json
