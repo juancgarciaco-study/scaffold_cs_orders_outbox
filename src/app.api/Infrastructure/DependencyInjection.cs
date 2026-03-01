@@ -15,12 +15,12 @@ public static class DependencyInjection
         Guard.Against.Null(connectionString, message: "Connection string 'CoreDb' not found.");
 
         builder.Services
-            .AddDatabase(connectionString);
+            .AddPgDatabase(connectionString);
 
     }
 
 
-    private static IServiceCollection AddDatabase(this IServiceCollection services, string dbConnectionString)
+    private static IServiceCollection AddPgDatabase(this IServiceCollection services, string dbConnectionString)
     {
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
