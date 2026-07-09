@@ -1,5 +1,6 @@
 using System.Text.Json;
 using app.api.Domain;
+using app.api.Domain.Common;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace app.api.Infrastructure;
@@ -19,7 +20,7 @@ public class OutboxMessagesInterceptor : SaveChangesInterceptor
         }
 
         var outboxMessages = context.ChangeTracker
-            .Entries<IHasDomainEvents>()
+            .Entries<IBaseDomainEvents>()
             .Select(x => x.Entity)
             .SelectMany(aggregate =>
             {

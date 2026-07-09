@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace app.api.Domain;
+namespace app.api.Domain.Common;
 
-public abstract class Entity : IHasDomainEvents
+public abstract class BaseEntity : IBaseDomainEvents
 {
     private readonly List<IDomainEvent> _domainEvents = [];
 
@@ -14,7 +14,7 @@ public abstract class Entity : IHasDomainEvents
         _domainEvents.Clear();
     }
 
-    protected void Raise(IDomainEvent domainEvent)
+    public void AddDomainEvent(IDomainEvent domainEvent)
     {
         _domainEvents.Add(domainEvent);
     }

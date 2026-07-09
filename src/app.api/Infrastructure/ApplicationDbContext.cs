@@ -1,4 +1,5 @@
 using app.api.Domain;
+using app.api.Domain.Common;
 using app.api.Infrastructure.Converters;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
-        modelBuilder.Ignore<IHasDomainEvents>();
+        modelBuilder.Ignore<IBaseDomainEvents>();
 
         base.OnModelCreating(modelBuilder);
     }

@@ -1,6 +1,8 @@
+using app.api.Domain.Common;
+
 namespace app.api.Domain;
 
-public class Order : Entity
+public class Order : BaseEntity
 {
     private Order() { } // For EF Core
     internal long Id { get; init; }
@@ -15,7 +17,7 @@ public class Order : Entity
     {
         var order = new Order { OrderId = Ulid.NewUlid(), CustomerName = customerName, CreatedAt = DateTime.UtcNow };
 
-        order.Raise(new OrderCreated(order.OrderId.ToGuid(), order.CustomerName));
+        order.AddDomainEvent(new OrderCreated(order.OrderId.ToGuid(), order.CustomerName));
 
         return order;
     }

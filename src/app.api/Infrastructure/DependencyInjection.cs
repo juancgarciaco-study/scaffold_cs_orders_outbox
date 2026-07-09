@@ -14,18 +14,18 @@ public static class DependencyInjection
         Console.WriteLine($"connectionString->coredb: {connectionString}");
         Guard.Against.Null(connectionString, message: "Connection string 'CoreDb' not found.");
 
+        // builder.Services.AddSingleton<OutboxMessagesInterceptor>();
+        builder.Services.AddScoped<ISaveChangesInterceptor, OutboxMessagesInterceptor>();
+
         builder.Services
             .AddPgDatabase(connectionString);
-
     }
 
 
     private static IServiceCollection AddPgDatabase(this IServiceCollection services, string dbConnectionString)
     {
-
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
-            var interceptor = sp.GetRequiredService<OutboxMessagesInterceptor>();
             options
                 // .UseNpgsql(builder.Configuration.GetConnectionString("CoreDb"))
                 // options.EnableSensitiveDataLogging()
@@ -35,7 +35,7 @@ public static class DependencyInjection
                 )
                 .UseSnakeCaseNamingConvention(CultureInfo.CurrentCulture)
                 .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning))
-                .AddInterceptors(interceptor)
+                .AddInterceptors(sp.GetRequiredService<ISaveChangesInterceptor>())
                 ;
         });
 
@@ -94,7 +94,6 @@ internal sealed class DatabaseInitialiser(
 
     internal void DropDatabaseOnFinish(WebApplication app)
     {
-
         var db = dbContext.Database;
         app.Lifetime.ApplicationStopping.Register(() =>
         {
@@ -116,7 +115,6 @@ internal sealed class DatabaseInitialiser(
         {
             Console.WriteLine("Info: No pending migrations found.");
         }
-
     }
 
     internal async Task SeedAsync()

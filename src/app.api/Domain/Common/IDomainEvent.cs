@@ -1,4 +1,4 @@
-namespace app.api.Domain;
+namespace app.api.Domain.Common;
 
 public interface IDomainEvent
 {
